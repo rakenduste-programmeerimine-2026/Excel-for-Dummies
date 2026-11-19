@@ -21,3 +21,13 @@ export const xlsx = {
   percentUnit: 'ülalolevatest',
   defaultSheetName: 'Projekt',
 } as const;
+
+/** Text in the app UI (Frontend area). */
+export const ui = {
+  appName: 'Lihtne Excel',
+  appDescription: 'Koosta projekti eelarve ja laadi see alla Exceli failina.',
+  projects: {
+    title: 'Projektid',
+    empty: 'Sul pole veel ühtegi projekti.',
+  },
+} as const;
