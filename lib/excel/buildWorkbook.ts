@@ -1,7 +1,8 @@
 import 'server-only';
 import ExcelJS from 'exceljs';
+import { calcProject } from '@/lib/calc';
 import { xlsx } from '@/lib/strings.et';
-import { HEADER_ROW, sheetLayout } from './layout';
+import { HEADER_ROW, sheetLayout, type SheetLayout } from './layout';
 import type { ExportData } from './types';
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -71,7 +72,38 @@ export function buildWorksheet(workbook: ExcelJS.Workbook, data: ExportData): Ex
   ];
   for (const [r, text] of labels) sheet.getCell(r, col.unitPrice).value = text;
 
+  writeFormulas(sheet, data, layout);
   return sheet;
+}
+
+/**
+ * Every calculated cell is a real Excel formula (never a plain number), with the cached
+ * result from calcProject, so previews that don't recalculate still show the totals.
+ * The formulas round at exactly the same steps as lib/calc.ts.
+ */
+function writeFormulas(sheet: ExcelJS.Worksheet, data: ExportData, layout: SheetLayout): void {
+  const totals = calcProject(data.rows, data.project.tax_rate);
+  const { quantity: Q, unitPrice: P, total: T } = layout.letter;
+  const first = layout.firstDataRow;
+  const cell = (r: number) => sheet.getCell(r, layout.col.total);
+
+  data.rows.forEach((row, i) => {
+    const r = first + i;
+    let formula: string;
+    if (row.calc_type === 'fixed') formula = `${P}${r}`;
+    else if (row.calc_type === 'qty_price') formula = `ROUND(${Q}${r}*${P}${r},2)`;
+    else formula = i === 0 ? '0' : `ROUND(SUM(${T}${first}:${T}${r - 1})*${Q}${r},2)`;
+    cell(r).value = { formula, result: totals.lineTotals[i] ?? 0 };
+  });
+
+  const { subtotal, taxRate, tax, total } = layout.totalsRow;
+  cell(subtotal).value = {
+    formula: data.rows.length ? `SUM(${T}${first}:${T}${layout.lastDataRow})` : '0',
+    result: totals.subtotal,
+  };
+  cell(taxRate).value = data.project.tax_rate / 100;
+  cell(tax).value = { formula: `ROUND(${T}${subtotal}*${T}${taxRate},2)`, result: totals.tax };
+  cell(total).value = { formula: `${T}${subtotal}+${T}${tax}`, result: totals.total };
 }
 
 export async function buildWorkbook(data: ExportData): Promise<Buffer> {

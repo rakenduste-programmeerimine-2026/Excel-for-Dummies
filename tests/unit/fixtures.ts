@@ -16,7 +16,7 @@ export const pctRow = (description: string, percent: number, more: Partial<Row> 
 /** The project from the mockup in docs/backend/design.md section 3. */
 export function mockupProject(overrides: Partial<ExportData> = {}): ExportData {
   return {
-    businessName: 'Priks Sisustus OÜ',
+    businessName: 'Kodu Remont OÜ',
     project: { name: 'Köögi remont', client: 'Mari Maasikas', address: 'Õie tänav 5, Tallinn', tax_rate: 24 },
     columns: [{ id: 'col-ruum', name: 'Ruum' }],
     rows: [
