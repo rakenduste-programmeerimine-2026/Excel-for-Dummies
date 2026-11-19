@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calcProject } from '@/lib/calc';
 import { getProjectForExport, toExtra, toNumber } from '@/lib/queries';
-import { fakeSupabase, P1, P2, sampleTables } from './fake-supabase';
+import { C1, C2, fakeSupabase, P1, P2, sampleTables } from './fake-supabase';
 
 describe('getProjectForExport', () => {
   it('loads the project, business name, columns and rows in position order', async () => {
@@ -9,7 +9,7 @@ describe('getProjectForExport', () => {
     const data = await getProjectForExport(client, P1);
     expect(data?.businessName).toBe('Kodu Remont OÜ');
     expect(data?.project).toEqual({ name: 'Õie tänav 5', client: 'Mari Maasikas', address: 'Õie tänav 5, Tallinn', tax_rate: 24 });
-    expect(data?.columns).toEqual([{ id: 'c1', name: 'Ruum' }, { id: 'c2', name: 'Tarnija' }]);
+    expect(data?.columns).toEqual([{ id: C1, name: 'Ruum' }, { id: C2, name: 'Tarnija' }]);
     expect(data?.rows.map((r) => r.description)).toEqual(['Seinte krohvimine', 'Tööjõud', 'Transport', 'Allahindlus']);
   });
 
@@ -24,7 +24,7 @@ describe('getProjectForExport', () => {
   it('keeps only text values in extra', async () => {
     const { client } = fakeSupabase(sampleTables());
     const data = (await getProjectForExport(client, P1))!;
-    expect(data.rows[0]!.extra).toEqual({ c1: 'Köök', gone: 'x', n: '5' });
+    expect(data.rows[0]!.extra).toEqual({ [C1]: 'Köök', gone: 'x', n: '5' });
     expect(data.rows[1]!.extra).toEqual({});
     expect(data.rows[3]!.extra).toEqual({});
   });
