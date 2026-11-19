@@ -1,0 +1,233 @@
+.scroll {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: var(--space-2);
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.row td {
+  padding: var(--space-2);
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child td {
+  border-bottom: none;
+}
+
+.no {
+  width: 3ch;
+  color: var(--color-muted);
+  text-align: right;
+}
+
+/* Line up plain text cells with the text inside the 44px inputs. */
+.row .no,
+.row .total {
+  padding-top: calc(var(--space-2) + 10px);
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.description {
+  min-width: 14rem;
+}
+
+.unit {
+  width: 6rem;
+}
+
+.number {
+  width: 7rem;
+  text-align: right;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.error {
+  max-width: 14rem;
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
+.percent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.percentSuffix {
+  padding-top: 10px;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.total {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.row .total {
+  font-weight: 600;
+}
+
+.negative {
+  color: var(--color-danger);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.iconButton {
+  min-width: var(--touch-target);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Anchored below the ⋯ button where CSS anchor positioning exists; centred on screen otherwise. */
+.menu {
+  inset: auto;
+  margin: var(--space-1) 0 0;
+  position-area: bottom span-left;
+  position-try-fallbacks: flip-block;
+  min-width: 10rem;
+  padding: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.12);
+}
+
+@supports not (position-area: bottom) {
+  .menu {
+    inset: 0;
+    margin: auto;
+  }
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background: var(--color-bg);
+}
+
+.danger {
+  color: var(--color-danger);
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.addButton {
+  margin-top: var(--space-3);
+  padding: 0 var(--space-4);
+  font-weight: 600;
+  color: var(--color-primary-text);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.totals {
+  margin-top: var(--space-6);
+  margin-left: auto;
+  max-width: 24rem;
+}
+
+.warning {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  color: var(--color-danger);
+  background: #fef3f2;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+}
+
+.totalsList {
+  margin: 0;
+}
+
+.totalsList > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+}
+
+.totalsList dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.totalsList > .grandTotal {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  font-size: 1.125rem;
+  font-weight: 700;
+  border-top: 2px solid var(--color-text);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
