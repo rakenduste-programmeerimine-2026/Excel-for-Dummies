@@ -161,3 +161,7 @@ export const rowOrderSchema = z
   .array(idSchema)
   .max(5000)
   .refine((ids) => new Set(ids).size === ids.length, { error: t.invalidOrder });
+
+// ---- extra columns ----------------------------------------------------------
+
+export const columnNameSchema = text(100).min(1, { error: t.columnNameRequired });
