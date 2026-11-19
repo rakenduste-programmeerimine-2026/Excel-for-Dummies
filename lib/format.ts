@@ -18,3 +18,20 @@ export function formatDate(isoDate: string): string {
   const [year, month, day] = isoDate.split('-');
   return `${day}.${month}.${year}`;
 }
+
+export type ParsedDecimal = number | null | 'invalid';
+
+/**
+ * Parses what the user typed into a number field. Accepts "12,50", "12.50", "1 234,5" and "−10".
+ * Returns null for an empty field (or a lone "-" while typing), 'invalid' for anything else
+ * that isn't a number with at most `maxDecimals` decimals.
+ */
+export function parseDecimal(text: string, maxDecimals: number): ParsedDecimal {
+  const s = text.replace(/[\s ]/g, '').replace('−', '-').replace(',', '.');
+  if (s === '' || s === '-') return null;
+  const match = /^-?(?:\d+(?:\.(\d*))?|\.(\d+))$/.exec(s);
+  if (!match) return 'invalid';
+  const decimals = match[1] ?? match[2] ?? '';
+  if (decimals.length > maxDecimals) return 'invalid';
+  return Number(s);
+}
