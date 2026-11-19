@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatEur, parseDecimal } from '@/lib/format';
+import { formatEur, parseDecimal } from '@/lib/format';
 
 const NBSP = ' ';
 
@@ -21,13 +21,6 @@ describe('formatEur', () => {
   it('always shows 2 decimals', () => {
     expect(formatEur(200)).toBe(`200,00${NBSP}€`);
     expect(formatEur(0.125)).toBe(`0,13${NBSP}€`);
-  });
-});
-
-describe('formatDate', () => {
-  it('turns a Postgres date into dd.mm.yyyy', () => {
-    expect(formatDate('2026-11-19')).toBe('19.11.2026');
-    expect(formatDate('2027-01-02')).toBe('02.01.2027');
   });
 });
 

@@ -40,15 +40,6 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
       <td className={styles.no}>{no}</td>
       <td>
         <input
-          type="date"
-          className={styles.input}
-          value={row.date}
-          onChange={(e) => update({ date: e.target.value })}
-          aria-label={label(t.columns.date)}
-        />
-      </td>
-      <td>
-        <input
           className={`${styles.input} ${styles.description}`}
           value={row.description}
           placeholder={t.descriptionPlaceholder}

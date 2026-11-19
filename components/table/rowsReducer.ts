@@ -13,7 +13,6 @@ export type RowsAction =
 export function emptyRow(id: string): EditorRow {
   return {
     id,
-    date: '',
     description: '',
     calc_type: 'fixed',
     quantity: '',

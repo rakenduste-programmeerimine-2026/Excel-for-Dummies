@@ -11,7 +11,6 @@ export const metadata: Metadata = { title: `${ui.project.demoTitle} · ${ui.appN
 const demoRows: EditorRow[] = [
   {
     ...emptyRow('demo-1'),
-    date: '2026-11-02',
     description: 'Seinte krohvimine',
     calc_type: 'qty_price',
     quantity: '10',
@@ -20,7 +19,6 @@ const demoRows: EditorRow[] = [
   },
   {
     ...emptyRow('demo-2'),
-    date: '2026-11-03',
     description: 'Tööjõud',
     calc_type: 'qty_price',
     quantity: '8',

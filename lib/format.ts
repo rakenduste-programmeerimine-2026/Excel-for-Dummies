@@ -13,12 +13,6 @@ export function formatEur(amount: number): string {
   return eur.format(amount);
 }
 
-/** "2026-11-19" (Postgres date) → "19.11.2026". Plain string split, so no time-zone shift. */
-export function formatDate(isoDate: string): string {
-  const [year, month, day] = isoDate.split('-');
-  return `${day}.${month}.${year}`;
-}
-
 export type ParsedDecimal = number | null | 'invalid';
 
 /**

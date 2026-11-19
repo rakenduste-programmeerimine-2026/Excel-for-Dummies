@@ -34,7 +34,6 @@ export function TableEditor({ initialRows, taxRate }: Props) {
             <thead>
               <tr>
                 <th className={styles.no}>{t.columns.no}</th>
-                <th>{t.columns.date}</th>
                 <th>{t.columns.description}</th>
                 <th>{t.columns.calcType}</th>
                 <th>{t.columns.quantity}</th>

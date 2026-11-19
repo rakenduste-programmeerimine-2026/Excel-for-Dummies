@@ -3,7 +3,6 @@ import type { CalcType } from '@/lib/calc';
 /** A row as the editor holds it: the DB row shape, with number fields kept as the text the user typed. */
 export type EditorRow = {
   id: string;
-  date: string; // '' or yyyy-mm-dd
   description: string;
   calc_type: CalcType;
   quantity: string;

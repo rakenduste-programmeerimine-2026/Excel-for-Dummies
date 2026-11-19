@@ -36,7 +36,6 @@ export const ui = {
   table: {
     columns: {
       no: 'Nr',
-      date: 'Kuupäev',
       description: 'Kirjeldus',
       calcType: 'Arvutus',
       quantity: 'Kogus',
