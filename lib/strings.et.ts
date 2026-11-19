@@ -22,6 +22,13 @@ export const xlsx = {
   defaultSheetName: 'Projekt',
 } as const;
 
+/** Error messages returned by the API routes (Backend area). */
+export const api = {
+  notSignedIn: 'Palun logi sisse.',
+  projectNotFound: 'Projekti ei leitud.',
+  exportFailed: 'Exceli faili loomine ebaõnnestus. Palun proovi uuesti.',
+} as const;
+
 /** Text in the app UI (Frontend area). */
 export const ui = {
   appName: 'Lihtne Excel',
