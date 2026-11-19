@@ -33,7 +33,7 @@ describe('sheetLayout: letters move with the number of extra columns', () => {
 describe('buildWorksheet layout (Estonian)', () => {
   it('row 1 is the business name and row 2 the project info with the export date', () => {
     const sheet = sheetFor();
-    expect(sheet.getCell('A1').value).toBe('Priks Sisustus OÜ');
+    expect(sheet.getCell('A1').value).toBe('Kodu Remont OÜ');
     expect(sheet.getCell('A2').value).toBe('Köögi remont · Mari Maasikas · Õie tänav 5, Tallinn · 19.11.2026');
   });
 

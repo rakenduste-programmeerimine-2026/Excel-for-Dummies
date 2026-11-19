@@ -38,12 +38,12 @@ Additional export (not a contract change): `isSubtotalNegative(totals)` for the 
 
 ## 3. Excel export mockup
 
-Project with **one extra column** ("Ruum"), business "Priks Sisustus OÜ", käibemaks 24 %, exported 19.11.2026.
+Project with **one extra column** ("Ruum"), business "Kodu Remont OÜ", käibemaks 24 %, exported 19.11.2026.
 Letters come from `colLetter`; with 0 or 3 extra columns, everything after *Kirjeldus* shifts.
 
 ```
      A    B           C              D         E          F               G              H
-1  | Priks Sisustus OÜ                              (bold, 16 pt)
+1  | Kodu Remont OÜ                                 (bold, 16 pt)
 2  | Köögi remont · Mari Maasikas · Õie tänav 5, Tallinn · 19.11.2026
 3  |
 4  | Nr | Kuupäev    | Kirjeldus    | Ruum    | Kogus    | Ühik           | Ühiku hind | Summa          <- bold, filled, frozen
