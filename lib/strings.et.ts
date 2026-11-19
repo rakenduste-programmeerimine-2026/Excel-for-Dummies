@@ -32,6 +32,7 @@ export const ui = {
   },
   project: {
     demoTitle: 'Näidisprojekt',
+    downloadExcel: 'Laadi alla Excel',
   },
   table: {
     columns: {

@@ -29,10 +29,17 @@ const demoRows: EditorRow[] = [
   { ...emptyRow('demo-4'), description: 'Allahindlus', calc_type: 'percent', percent: '-10' },
 ];
 
-export default function ProjectPage() {
+export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <>
-      <h1 className={styles.title}>{ui.project.demoTitle}</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>{ui.project.demoTitle}</h1>
+        {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}
+        <a href={`/api/projects/${encodeURIComponent(id)}/export`} className={styles.download} download>
+          {ui.project.downloadExcel}
+        </a>
+      </div>
       <TableEditor initialRows={demoRows} taxRate={24} />
     </>
   );
