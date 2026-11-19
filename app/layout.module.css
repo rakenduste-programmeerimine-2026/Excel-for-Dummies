@@ -1,0 +1,32 @@
+.header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerInner,
+.main {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+.main {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
+}

@@ -1,0 +1,8 @@
+.title {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-4);
+}
+
+.empty {
+  color: var(--color-muted);
+}
