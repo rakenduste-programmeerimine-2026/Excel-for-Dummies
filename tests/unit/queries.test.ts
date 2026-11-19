@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { calcProject } from '@/lib/calc';
 import { getProjectForExport, toExtra, toNumber } from '@/lib/queries';
-import { fakeSupabase, sampleTables } from './fake-supabase';
+import { fakeSupabase, P1, P2, sampleTables } from './fake-supabase';
 
 describe('getProjectForExport', () => {
   it('loads the project, business name, columns and rows in position order', async () => {
     const { client } = fakeSupabase(sampleTables());
-    const data = await getProjectForExport(client, 'p1');
+    const data = await getProjectForExport(client, P1);
     expect(data?.businessName).toBe('Kodu Remont OÜ');
     expect(data?.project).toEqual({ name: 'Õie tänav 5', client: 'Mari Maasikas', address: 'Õie tänav 5, Tallinn', tax_rate: 24 });
     expect(data?.columns).toEqual([{ id: 'c1', name: 'Ruum' }, { id: 'c2', name: 'Tarnija' }]);
@@ -15,7 +15,7 @@ describe('getProjectForExport', () => {
 
   it('converts numeric strings to numbers, so calcProject gives the docs/database.md totals', async () => {
     const { client } = fakeSupabase(sampleTables());
-    const data = (await getProjectForExport(client, 'p1'))!;
+    const data = (await getProjectForExport(client, P1))!;
     expect(data.rows[1]).toMatchObject({ quantity: 8, unit_price: 25 });
     expect(data.rows[2]).toMatchObject({ unit_price: 30 });
     expect(calcProject(data.rows, data.project.tax_rate)).toMatchObject({ subtotal: 247.5, tax: 59.4, total: 306.9 });
@@ -23,7 +23,7 @@ describe('getProjectForExport', () => {
 
   it('keeps only text values in extra', async () => {
     const { client } = fakeSupabase(sampleTables());
-    const data = (await getProjectForExport(client, 'p1'))!;
+    const data = (await getProjectForExport(client, P1))!;
     expect(data.rows[0]!.extra).toEqual({ c1: 'Köök', gone: 'x', n: '5' });
     expect(data.rows[1]!.extra).toEqual({});
     expect(data.rows[3]!.extra).toEqual({});
@@ -31,28 +31,28 @@ describe('getProjectForExport', () => {
 
   it('filters every query by the project and orders by position', async () => {
     const { client, log } = fakeSupabase(sampleTables());
-    await getProjectForExport(client, 'p1');
-    expect(log.find((q) => q.table === 'project_columns')).toMatchObject({ filters: [['project_id', 'p1']], orders: ['position'] });
-    expect(log.find((q) => q.table === 'rows')).toMatchObject({ filters: [['project_id', 'p1']], orders: ['position', 'created_at'] });
+    await getProjectForExport(client, P1);
+    expect(log.find((q) => q.table === 'project_columns')).toMatchObject({ filters: [['project_id', P1]], orders: ['position'] });
+    expect(log.find((q) => q.table === 'rows')).toMatchObject({ filters: [['project_id', P1]], orders: ['position', 'created_at'] });
     expect(log.find((q) => q.table === 'profiles')).toMatchObject({ filters: [['id', 'user-1']] });
   });
 
   it('returns null for a missing project or one RLS hides', async () => {
     const { client } = fakeSupabase(sampleTables());
     expect(await getProjectForExport(client, 'nope')).toBeNull();
-    expect(await getProjectForExport(client, 'p2')).toBeNull();
+    expect(await getProjectForExport(client, P2)).toBeNull();
   });
 
   it('handles a project without a profile, columns or rows', async () => {
     const tables = sampleTables();
     const { client } = fakeSupabase({ projects: tables.projects ?? [] });
-    expect(await getProjectForExport(client, 'p1')).toMatchObject({ businessName: null, columns: [], rows: [] });
+    expect(await getProjectForExport(client, P1)).toMatchObject({ businessName: null, columns: [], rows: [] });
   });
 
   it('throws when a query fails', async () => {
     for (const table of ['projects', 'profiles', 'project_columns', 'rows']) {
       const { client } = fakeSupabase(sampleTables(), { failOn: table });
-      await expect(getProjectForExport(client, 'p1'), table).rejects.toThrow('exploded');
+      await expect(getProjectForExport(client, P1), table).rejects.toThrow('exploded');
     }
   });
 });

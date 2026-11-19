@@ -49,23 +49,26 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
   return { client: client as unknown as Supabase, log };
 }
 
+export const P1 = '11111111-1111-4111-8111-111111111111';
+export const P2 = '22222222-2222-4222-8222-222222222222';
+
 /** A project of user-1 with two extra columns and rows stored out of order. */
 export function sampleTables(): Tables {
   return {
     projects: [
-      { id: 'p1', user_id: 'user-1', name: 'Õie tänav 5', client: 'Mari Maasikas', address: 'Õie tänav 5, Tallinn', tax_rate: 24 },
-      { id: 'p2', user_id: 'user-2', name: 'Someone else', client: null, address: null, tax_rate: 22 },
+      { id: P1, user_id: 'user-1', name: 'Õie tänav 5', client: 'Mari Maasikas', address: 'Õie tänav 5, Tallinn', tax_rate: 24 },
+      { id: P2, user_id: 'user-2', name: 'Someone else', client: null, address: null, tax_rate: 22 },
     ],
     profiles: [{ id: 'user-1', business_name: 'Kodu Remont OÜ', default_tax_rate: 24 }],
     project_columns: [
-      { id: 'c2', project_id: 'p1', name: 'Tarnija', position: 2 },
-      { id: 'c1', project_id: 'p1', name: 'Ruum', position: 1 },
+      { id: 'c2', project_id: P1, name: 'Tarnija', position: 2 },
+      { id: 'c1', project_id: P1, name: 'Ruum', position: 1 },
     ],
     rows: [
-      { project_id: 'p1', position: 3, created_at: '1', date: null, description: 'Transport', calc_type: 'fixed', quantity: null, unit: null, unit_price: '30.00', percent: null, extra: {} },
-      { project_id: 'p1', position: 1, created_at: '1', date: '2026-11-02', description: 'Seinte krohvimine', calc_type: 'qty_price', quantity: 10, unit: 'm²', unit_price: 4.5, percent: null, extra: { c1: 'Köök', gone: 'x', n: 5, bad: { a: 1 } } },
-      { project_id: 'p1', position: 4, created_at: '1', date: null, description: 'Allahindlus', calc_type: 'percent', quantity: 3, unit: null, unit_price: null, percent: -10, extra: [] },
-      { project_id: 'p1', position: 2, created_at: '1', date: null, description: 'Tööjõud', calc_type: 'qty_price', quantity: '8.000', unit: 'h', unit_price: 25, percent: null, extra: null },
+      { project_id: P1, position: 3, created_at: '1', date: null, description: 'Transport', calc_type: 'fixed', quantity: null, unit: null, unit_price: '30.00', percent: null, extra: {} },
+      { project_id: P1, position: 1, created_at: '1', date: '2026-11-02', description: 'Seinte krohvimine', calc_type: 'qty_price', quantity: 10, unit: 'm²', unit_price: 4.5, percent: null, extra: { c1: 'Köök', gone: 'x', n: 5, bad: { a: 1 } } },
+      { project_id: P1, position: 4, created_at: '1', date: null, description: 'Allahindlus', calc_type: 'percent', quantity: 3, unit: null, unit_price: null, percent: -10, extra: [] },
+      { project_id: P1, position: 2, created_at: '1', date: null, description: 'Tööjõud', calc_type: 'qty_price', quantity: '8.000', unit: 'h', unit_price: 25, percent: null, extra: null },
     ],
   };
 }
