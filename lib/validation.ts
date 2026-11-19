@@ -80,3 +80,84 @@ export type UpdateProfileInput = { business_name?: string | null; default_tax_ra
 export function definedOnly<T extends Record<string, unknown>>(obj: T): Partial<T> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 }
+
+// ---- rows -------------------------------------------------------------------
+
+export const calcTypeSchema = z.enum(['fixed', 'qty_price', 'percent'], { error: t.invalidCalcType });
+
+/** numeric(12,3), never negative */
+export const quantity = decimal(3, { min: 0, max: 999_999_999.999, minMessage: t.quantityNegative });
+/** numeric(12,2); may be negative (e.g. a fixed discount) */
+export const unitPrice = decimal(2, { min: -9_999_999_999.99, max: 9_999_999_999.99 });
+/** numeric(6,2); negative = discount */
+export const percent = decimal(2, { min: -100, max: 9999.99, minMessage: t.percentRange, maxMessage: t.percentRange });
+
+const ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
+const ET = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/;
+
+/** A date as yyyy-mm-dd (date input) or dd.mm.yyyy (typed); stored as yyyy-mm-dd. Empty -> null. */
+export const dateField = z.unknown().transform((value, ctx): string | null => {
+  if (value === null || value === undefined || value === '') return null;
+  const s = typeof value === 'string' ? value.trim() : '';
+  const iso = ISO.exec(s);
+  const et = ET.exec(s);
+  const [y, m, d] = iso ? [iso[1], iso[2], iso[3]] : et ? [et[3], et[2], et[1]] : [];
+  const date = y && m && d ? new Date(Date.UTC(Number(y), Number(m) - 1, Number(d))) : null;
+  if (!date || date.getUTCFullYear() !== Number(y) || date.getUTCMonth() !== Number(m) - 1 || date.getUTCDate() !== Number(d)) {
+    ctx.addIssue({ code: 'custom', message: t.invalidDate });
+    return z.NEVER;
+  }
+  return date.toISOString().slice(0, 10);
+});
+
+export const rowPatchSchema = z
+  .object({
+    date: dateField,
+    description: text(500),
+    calc_type: calcTypeSchema,
+    quantity,
+    unit: optionalText(30),
+    unit_price: unitPrice,
+    percent,
+    extra: z.record(z.string(), text(500)),
+  })
+  .partial();
+
+export type RowPatchInput = {
+  date?: string | null;
+  description?: string;
+  calc_type?: 'fixed' | 'qty_price' | 'percent';
+  quantity?: NumberInput;
+  unit?: string | null;
+  unit_price?: NumberInput;
+  percent?: NumberInput;
+  extra?: Record<string, string>;
+};
+
+type CalcFields = { calc_type: 'fixed' | 'qty_price' | 'percent'; quantity: number | null; unit_price: number | null; percent: number | null };
+
+/** Same rule as the rows_required_fields check constraint in the database. */
+export function requiredFieldErrors(row: CalcFields): Record<string, string> {
+  const errors: Record<string, string> = {};
+  if (row.calc_type === 'qty_price' && row.quantity === null) errors.quantity = t.quantityRequired;
+  if ((row.calc_type === 'fixed' || row.calc_type === 'qty_price') && row.unit_price === null) errors.unit_price = t.unitPriceRequired;
+  if (row.calc_type === 'percent' && row.percent === null) errors.percent = t.percentRequired;
+  return errors;
+}
+
+/**
+ * When the user switches a row's calc type, the fields the new type needs get safe defaults
+ * (unless they already have a value), so the autosave succeeds and nothing the user typed is lost.
+ */
+export function calcTypeDefaults(row: CalcFields): Partial<CalcFields> {
+  const defaults: Partial<CalcFields> = {};
+  if (row.calc_type === 'qty_price' && row.quantity === null) defaults.quantity = 1;
+  if ((row.calc_type === 'fixed' || row.calc_type === 'qty_price') && row.unit_price === null) defaults.unit_price = 0;
+  if (row.calc_type === 'percent' && row.percent === null) defaults.percent = 0;
+  return defaults;
+}
+
+export const rowOrderSchema = z
+  .array(idSchema)
+  .max(5000)
+  .refine((ids) => new Set(ids).size === ids.length, { error: t.invalidOrder });
