@@ -2,6 +2,7 @@ import 'server-only';
 import ExcelJS from 'exceljs';
 import { calcProject } from '@/lib/calc';
 import { xlsx } from '@/lib/strings.et';
+import { formatSheet } from './format';
 import { HEADER_ROW, sheetLayout, type SheetLayout } from './layout';
 import type { ExportData } from './types';
 
@@ -73,6 +74,7 @@ export function buildWorksheet(workbook: ExcelJS.Workbook, data: ExportData): Ex
   for (const [r, text] of labels) sheet.getCell(r, col.unitPrice).value = text;
 
   writeFormulas(sheet, data, layout);
+  formatSheet(sheet, layout);
   return sheet;
 }
 

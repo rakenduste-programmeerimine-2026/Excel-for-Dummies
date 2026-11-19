@@ -108,8 +108,9 @@ describe('the saved .xlsx file', () => {
   it('stores cached results of 0 in the file (previews would otherwise show empty totals)', async () => {
     const file = await buildWorkbook(mockupProject({ columns: [], rows: [] }));
     const xml = await (await JSZip.loadAsync(file)).file('xl/worksheets/sheet1.xml')!.async('string');
-    expect(xml).toContain('<c r="G6"><f>0</f><v>0</v></c>');
-    expect(xml).toContain('<c r="G8"><f>ROUND(G6*G7,2)</f><v>0</v></c>');
-    expect(xml).toContain('<c r="G9"><f>G6+G8</f><v>0</v></c>');
+    // Cells may carry a style attribute (s="…") once they are formatted.
+    expect(xml).toMatch(/<c r="G6"[^>]*><f>0<\/f><v>0<\/v><\/c>/);
+    expect(xml).toMatch(/<c r="G8"[^>]*><f>ROUND\(G6\*G7,2\)<\/f><v>0<\/v><\/c>/);
+    expect(xml).toMatch(/<c r="G9"[^>]*><f>G6\+G8<\/f><v>0<\/v><\/c>/);
   });
 });
