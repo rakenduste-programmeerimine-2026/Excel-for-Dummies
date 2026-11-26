@@ -1,0 +1,108 @@
+.card {
+  max-width: 24rem;
+  margin: var(--space-6) auto 0;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.title {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* Red only after the user has left the field or tried to submit, not while typing. */
+.input:user-invalid {
+  border-color: var(--color-danger);
+}
+
+.passwordRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.secondary {
+  flex-shrink: 0;
+  padding: 0 var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.error {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.notice {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.error:empty,
+.notice:empty {
+  display: none;
+}
+
+.submit {
+  padding: 0 var(--space-4);
+  font-weight: 600;
+  color: var(--color-primary-text);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.switch {
+  margin-top: var(--space-4);
+  color: var(--color-muted);
+}
+
+.link {
+  padding: 0;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
