@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "commitlint": "commitlint --from origin/main --to HEAD --verbose"
+    "commitlint": "commitlint --from origin/main --to HEAD --verbose",
+    "test:parity": "vitest run --config vitest.parity.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
