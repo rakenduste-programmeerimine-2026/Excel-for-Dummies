@@ -1,8 +1,6 @@
 import 'server-only';
-import type { CalcType } from '@/lib/calc';
-import { toExtra, toNumber, type Supabase } from '@/lib/queries';
+import { ROW_COLUMNS, toRowData, type RowData, type Supabase } from '@/lib/queries';
 import { validation as t } from '@/lib/strings.et';
-import type { Database } from '@/lib/types.db';
 import {
   calcTypeDefaults,
   definedOnly,
@@ -18,40 +16,9 @@ import { fail, fromZodError, notSignedIn, ok, saveFailed, type ActionResult } fr
 // Logic of the row server actions (app/projects/[id]/actions.ts wraps them).
 // Every query runs as the user, so RLS stops anyone from touching another user's rows.
 
-type DbRow = Database['public']['Tables']['rows']['Row'];
-
-/** A row as the actions return it: numeric columns as numbers. */
-export type RowData = {
-  id: string;
-  project_id: string;
-  position: number;
-  date: string | null;
-  description: string;
-  calc_type: CalcType;
-  quantity: number | null;
-  unit: string | null;
-  unit_price: number | null;
-  percent: number | null;
-  extra: Record<string, string>;
-};
-
-export function toRowData(row: DbRow): RowData {
-  return {
-    id: row.id,
-    project_id: row.project_id,
-    position: row.position,
-    date: row.date,
-    description: row.description,
-    calc_type: row.calc_type,
-    quantity: toNumber(row.quantity),
-    unit: row.unit,
-    unit_price: toNumber(row.unit_price),
-    percent: toNumber(row.percent),
-    extra: toExtra(row.extra),
-  };
-}
-
-const ROW_COLUMNS = 'id, project_id, position, date, description, calc_type, quantity, unit, unit_price, percent, extra, created_at';
+// RowData and toRowData live in lib/queries.ts (shared with the page queries); re-exported here
+// because the project page already imports them from this file.
+export { toRowData, type RowData };
 
 async function loadRow(supabase: Supabase, rowId: string) {
   return supabase.from('rows').select(ROW_COLUMNS).eq('id', rowId).maybeSingle();

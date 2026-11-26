@@ -44,6 +44,7 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     const desc = new Set<string>();
     let limit: number | undefined;
     let returning = false;
+    const inFilters: [string, unknown[]][] = [];
     let columns: string[] = [];
     /** Like PostgREST: exactly the selected columns, null when unset. */
     const withColumns = (rows: Row[]): Row[] =>
@@ -52,6 +53,7 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     const matching = (): Row[] => {
       let rows = (tables[table] ?? []).filter((r) => visible(table, r));
       for (const [col, value] of entry.filters) rows = rows.filter((r) => r[col] === value);
+      for (const [col, values] of inFilters) rows = rows.filter((r) => values.includes(r[col]));
       return rows;
     };
     const sorted = (rows: Row[]): Row[] => {
@@ -121,6 +123,7 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
       update: (payload: unknown) => ((entry.op = 'update'), (entry.payload = payload), builder),
       delete: () => ((entry.op = 'delete'), builder),
       eq: (col: string, value: unknown) => (entry.filters.push([col, value]), builder),
+      in: (col: string, values: unknown[]) => (inFilters.push([col, values]), builder),
       order: (col: string, opts?: { ascending?: boolean }) => {
         entry.orders.push(col);
         if (opts?.ascending === false) desc.add(col);
