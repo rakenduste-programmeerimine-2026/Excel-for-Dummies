@@ -3,7 +3,7 @@
 // Estonian message instead of a database error.
 import { z } from 'zod';
 import { parseDecimal } from '@/lib/format';
-import { validation as t } from '@/lib/strings.et';
+import { auth as authText, validation as t } from '@/lib/strings.et';
 
 export const idSchema = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, { error: t.invalidId });
 
@@ -165,3 +165,26 @@ export const rowOrderSchema = z
 // ---- extra columns ----------------------------------------------------------
 
 export const columnNameSchema = text(100).min(1, { error: t.columnNameRequired });
+
+// ---- auth -------------------------------------------------------------------
+
+
+export const PASSWORD_MIN_LENGTH = 8;
+
+const email = z
+  .string({ error: authText.invalidEmail })
+  .trim()
+  .toLowerCase()
+  .pipe(z.email({ error: authText.invalidEmail }));
+
+export const signUpSchema = z.object({
+  email,
+  password: z.string({ error: authText.passwordRequired }).min(PASSWORD_MIN_LENGTH, { error: authText.passwordTooShort(PASSWORD_MIN_LENGTH) }).max(72, { error: authText.weakPassword }),
+});
+
+export const signInSchema = z.object({
+  email,
+  password: z.string({ error: authText.passwordRequired }).min(1, { error: authText.passwordRequired }),
+});
+
+export type AuthInput = { email: string; password: string };

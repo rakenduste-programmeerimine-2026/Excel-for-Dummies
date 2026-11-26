@@ -53,6 +53,21 @@ export const validation = {
   invalidOrder: 'Ridade järjekord on vahepeal muutunud. Laadi leht uuesti.',
 } as const;
 
+/** Sign-up, login and email confirmation messages (Backend area). */
+export const auth = {
+  invalidEmail: 'Sisesta korrektne e-posti aadress.',
+  passwordRequired: 'Sisesta parool.',
+  passwordTooShort: (min: number) => `Parool peab olema vähemalt ${min} märki pikk.`,
+  invalidCredentials: 'Vale e-posti aadress või parool.',
+  emailNotConfirmed: 'Kinnita oma e-posti aadress. Saatsime sulle kinnituslingi.',
+  emailExists: 'Selle e-posti aadressiga konto on juba olemas. Logi sisse.',
+  weakPassword: 'Parool on liiga nõrk. Kasuta pikemat parooli, kus on tähti ja numbreid.',
+  tooManyAttempts: 'Liiga palju katseid. Proovi mõne minuti pärast uuesti.',
+  signupDisabled: 'Uute kontode loomine on praegu suletud.',
+  confirmLinkInvalid: 'Kinnituslink on aegunud või vigane. Logi sisse või loo konto uuesti.',
+  failed: 'Midagi läks valesti. Palun proovi uuesti.',
+} as const;
+
 /** Text in the app UI (Frontend area). */
 export const ui = {
   appName: 'Lihtne Excel',
