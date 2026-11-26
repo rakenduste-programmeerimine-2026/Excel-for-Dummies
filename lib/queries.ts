@@ -6,8 +6,8 @@ import type { Database, Json } from '@/lib/types.db';
 export type Supabase = SupabaseClient<Database>;
 
 /** numeric columns arrive as numbers from PostgREST, but may be strings; accept both. */
-export function toNumber(value: number | string | null): number | null {
-  if (value === null) return null;
+export function toNumber(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
   const n = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(n)) throw new Error(`Not a number from the database: ${String(value)}`);
   return n;

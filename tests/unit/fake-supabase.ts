@@ -44,6 +44,10 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     const desc = new Set<string>();
     let limit: number | undefined;
     let returning = false;
+    let columns: string[] = [];
+    /** Like Postgres: every selected column is present, null when unset. */
+    const withColumns = (rows: Row[]): Row[] =>
+      columns.length ? rows.map((r) => ({ ...Object.fromEntries(columns.map((c) => [c, null])), ...r })) : rows;
 
     const matching = (): Row[] => {
       let rows = (tables[table] ?? []).filter((r) => visible(table, r));
@@ -69,21 +73,21 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
       const store = tables[table];
       switch (entry.op) {
         case 'select':
-          return { data: sorted(matching()), error: null };
+          return { data: withColumns(sorted(matching())), error: null };
         case 'insert': {
           const items = (Array.isArray(entry.payload) ? entry.payload : [entry.payload]) as Row[];
           const created: Row[] = items.map((item) => ({ id: randomUUID(), created_at: String(clock++), ...item }));
           if (!created.every((r) => visible(table, r) || (table === 'projects' && r.user_id === user?.id))) return { data: null, error: rlsError };
           if (created.some((r) => store.some((s) => s.id === r.id))) return { data: null, error: { message: 'duplicate key', code: '23505' } };
           store.push(...created);
-          return { data: returning ? created : null, error: null };
+          return { data: returning ? withColumns(created) : null, error: null };
         }
         case 'update': {
           const rows = matching();
           const patch = entry.payload as Row;
           if (table === 'projects' && 'user_id' in patch && patch.user_id !== user?.id) return { data: null, error: rlsError };
           for (const r of rows) Object.assign(r, patch);
-          return { data: returning ? rows : null, error: null };
+          return { data: returning ? withColumns(rows) : null, error: null };
         }
         case 'delete': {
           const rows = matching();
@@ -108,8 +112,9 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     };
 
     const builder = {
-      select: () => {
+      select: (cols?: string) => {
         if (entry.op !== 'select') returning = true;
+        columns = cols && cols !== '*' ? cols.split(',').map((c) => c.trim()) : [];
         return builder;
       },
       insert: (payload: unknown) => ((entry.op = 'insert'), (entry.payload = payload), builder),
@@ -137,7 +142,8 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
       const ids = args.p_row_ids as string[];
       const rows = (tables.rows ?? []).filter((r) => r.project_id === projectId && visible('rows', r));
       const same = ids.length === rows.length && new Set(ids).size === ids.length && rows.every((r) => ids.includes(r.id as string));
-      if (!same) return Promise.resolve({ data: null, error: { message: 'p_row_ids must contain exactly the project rows', code: 'P0001' } });
+      // Same errcode as the real function (supabase/migrations/*_functions.sql).
+      if (!same) return Promise.resolve({ data: null, error: { message: 'reorder_rows: p_row_ids must contain exactly the rows of project', code: '22023' } });
       ids.forEach((id, i) => (rows.find((r) => r.id === id)!.position = i + 1));
       return Promise.resolve({ data: null, error: null });
     }
