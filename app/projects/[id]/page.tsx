@@ -1,24 +1,63 @@
 import type { Metadata } from 'next';
+import { notFound, redirect } from 'next/navigation';
+import { cache } from 'react';
 import { TableEditor } from '@/components/table/TableEditor';
+import { toEditorRow } from '@/components/table/rowsReducer';
+import { currentUserId } from '@/lib/actions/projects';
+import { toRowData } from '@/lib/actions/rows';
+import { toNumber } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
+import { createClient } from '@/lib/supabase/server';
+import { idSchema } from '@/lib/validation';
 import styles from './page.module.css';
 
-export const metadata: Metadata = { title: `${ui.project.demoTitle} · ${ui.appName}` };
+type Params = { params: Promise<{ id: string }> };
 
-// shortcut: shows an empty table and nothing is saved; load the project by id from the database (#33).
+// cache(): the page and its <title> share one load per request.
+// Runs as the signed-in user, so RLS returns null for someone else's project.
+const loadProject = cache(async (id: string) => {
+  if (!idSchema.safeParse(id).success) return null;
+  const supabase = await createClient();
+  const { data: project, error } = await supabase.from('projects').select('name, tax_rate').eq('id', id).maybeSingle();
+  if (error) throw new Error(`Loading project failed: ${error.message}`);
+  if (!project) return null;
 
-export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const { data: rows, error: rowsError } = await supabase
+    .from('rows')
+    .select('*')
+    .eq('project_id', id)
+    .order('position')
+    .order('created_at');
+  if (rowsError) throw new Error(`Loading rows failed: ${rowsError.message}`);
+
+  return {
+    name: project.name,
+    taxRate: toNumber(project.tax_rate) ?? 0,
+    rows: rows.map((row) => toEditorRow(toRowData(row))),
+  };
+});
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const project = await loadProject((await params).id);
+  return { title: `${project?.name ?? ui.project.fallbackTitle} · ${ui.appName}` };
+}
+
+export default async function ProjectPage({ params }: Params) {
   const { id } = await params;
+  if (!(await currentUserId(await createClient()))) redirect('/login');
+  const project = await loadProject(id);
+  if (!project) notFound();
+
   return (
     <>
       <div className={styles.header}>
-        <h1 className={styles.title}>{ui.project.demoTitle}</h1>
+        <h1 className={styles.title}>{project.name}</h1>
         {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}
         <a href={`/api/projects/${encodeURIComponent(id)}/export`} className={styles.download} download>
           {ui.project.downloadExcel}
         </a>
       </div>
-      <TableEditor initialRows={[]} taxRate={24} />
+      <TableEditor projectId={id} initialRows={project.rows} taxRate={project.taxRate} />
     </>
   );
 }

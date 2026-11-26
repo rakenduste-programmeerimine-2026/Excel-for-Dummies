@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calcRows } from '@/lib/calc';
-import { emptyRow, rowsReducer, toRowInput } from '@/components/table/rowsReducer';
+import { emptyRow, rowsReducer, toEditorRow, toRowInput } from '@/components/table/rowsReducer';
+import type { RowData } from '@/lib/actions/rows';
 import type { EditorRow } from '@/components/table/types';
 
 const row = (id: string, patch: Partial<EditorRow> = {}): EditorRow => ({ ...emptyRow(id), ...patch });
@@ -68,5 +69,51 @@ describe('toRowInput', () => {
     const totals = (r: EditorRow[]) => calcRows(r.map(toRowInput));
     expect(totals(rows)).toEqual([100, -10, 50]);
     expect(totals(rowsReducer(rows, { type: 'move', id: 'p', direction: 1 }))).toEqual([100, 50, -15]);
+  });
+});
+
+describe('fillEmpty', () => {
+  it('fills only the fields that are still empty', () => {
+    const rows = [row('a', { calc_type: 'qty_price', unit_price: '5' })];
+    const next = rowsReducer(rows, { type: 'fillEmpty', id: 'a', values: { quantity: '1', unit_price: '0,00', percent: '' } });
+    expect(next[0]).toMatchObject({ quantity: '1', unit_price: '5', percent: '' });
+  });
+});
+
+describe('toEditorRow', () => {
+  const base: RowData = {
+    id: 'a',
+    project_id: 'p',
+    position: 1,
+    date: null,
+    description: 'Krohv',
+    calc_type: 'qty_price',
+    quantity: 2.5,
+    unit: 'm²',
+    unit_price: 4.5,
+    percent: null,
+    extra: { col: 'Köök' },
+  };
+
+  it('shows numbers the Estonian way, money with 2 decimals', () => {
+    expect(toEditorRow(base)).toEqual({
+      id: 'a',
+      description: 'Krohv',
+      calc_type: 'qty_price',
+      quantity: '2,5',
+      unit: 'm²',
+      unit_price: '4,50',
+      percent: '',
+      extra: { col: 'Köök' },
+    });
+  });
+
+  it('turns nulls into empty fields and keeps negative percents', () => {
+    const editor = toEditorRow({ ...base, calc_type: 'percent', quantity: null, unit: null, unit_price: null, percent: -10 });
+    expect(editor).toMatchObject({ quantity: '', unit: '', unit_price: '', percent: '-10' });
+  });
+
+  it('round-trips through toRowInput', () => {
+    expect(toRowInput(toEditorRow(base))).toEqual({ calc_type: 'qty_price', quantity: 2.5, unit_price: 4.5, percent: null });
   });
 });

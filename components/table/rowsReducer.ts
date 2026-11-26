@@ -1,14 +1,17 @@
+import type { RowData } from '@/lib/actions/rows';
 import type { RowInput } from '@/lib/calc';
 import { parseDecimal } from '@/lib/format';
 import { DECIMALS, type EditorRow } from './types';
 
-// Each action maps 1:1 to a server action once the backend exists (#10).
+// Each action except 'fillEmpty' maps 1:1 to a server action (see autosave.ts).
 export type RowsAction =
   | { type: 'add'; id: string }
   | { type: 'update'; id: string; patch: Partial<Omit<EditorRow, 'id'>> }
   | { type: 'duplicate'; id: string; newId: string }
   | { type: 'delete'; id: string }
-  | { type: 'move'; id: string; direction: -1 | 1 };
+  | { type: 'move'; id: string; direction: -1 | 1 }
+  // Values the server filled in (calc-type defaults); only fields that are still empty take them.
+  | { type: 'fillEmpty'; id: string; values: Pick<EditorRow, 'quantity' | 'unit_price' | 'percent'> };
 
 export function emptyRow(id: string): EditorRow {
   return {
@@ -45,6 +48,15 @@ export function rowsReducer(rows: EditorRow[], action: RowsAction): EditorRow[] 
       [next[from], next[to]] = [next[to]!, next[from]!];
       return next;
     }
+    case 'fillEmpty':
+      return rows.map((row) => {
+        if (row.id !== action.id) return row;
+        const filled = { ...row };
+        for (const field of ['quantity', 'unit_price', 'percent'] as const) {
+          if (filled[field] === '') filled[field] = action.values[field];
+        }
+        return filled;
+      });
   }
 }
 
@@ -60,5 +72,25 @@ export function toRowInput(row: EditorRow): RowInput {
     quantity: toNumber(row.quantity, DECIMALS.quantity),
     unit_price: toNumber(row.unit_price, DECIMALS.unit_price),
     percent: toNumber(row.percent, DECIMALS.percent),
+  };
+}
+
+/** Number as the user would type it, Estonian style: 4.5 → "4,50" for money, 2.5 → "2,5" otherwise. */
+function toText(value: number | null, fixedDecimals?: number): string {
+  if (value === null) return '';
+  return (fixedDecimals === undefined ? String(value) : value.toFixed(fixedDecimals)).replace('.', ',');
+}
+
+/** A row from the database (via the row actions) as the editor holds it. */
+export function toEditorRow(row: RowData): EditorRow {
+  return {
+    id: row.id,
+    description: row.description,
+    calc_type: row.calc_type,
+    quantity: toText(row.quantity),
+    unit: row.unit ?? '',
+    unit_price: toText(row.unit_price, DECIMALS.unit_price),
+    percent: toText(row.percent),
+    extra: row.extra,
   };
 }
