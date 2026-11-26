@@ -29,6 +29,30 @@ export const api = {
   exportFailed: 'Exceli faili loomine ebaõnnestus. Palun proovi uuesti.',
 } as const;
 
+/** Validation and save messages from the server actions (Backend area). */
+export const validation = {
+  saveFailed: 'Salvestamine ebaõnnestus. Palun proovi uuesti.',
+  profileMissing: 'Kasutaja profiili ei leitud. Logi välja ja uuesti sisse.',
+  projectNotFound: 'Projekti ei leitud.',
+  rowNotFound: 'Rida ei leitud.',
+  columnNotFound: 'Veergu ei leitud.',
+  invalidId: 'Vigane viide. Laadi leht uuesti.',
+  projectNameRequired: 'Sisesta projekti nimi.',
+  columnNameRequired: 'Sisesta veeru nimi.',
+  tooLong: (max: number) => `Kuni ${max} märki.`,
+  invalidNumber: (decimals: number) => `Sisesta number, kuni ${decimals} kohta pärast koma (nt 12,50).`,
+  taxRateRange: 'Käibemaksumäär peab olema vahemikus 0–100 %.',
+  quantityNegative: 'Kogus ei saa olla negatiivne.',
+  numberTooLarge: 'Number on liiga suur.',
+  percentRange: 'Protsent peab olema vahemikus −100 kuni 9999,99.',
+  quantityRequired: 'Sisesta kogus.',
+  unitPriceRequired: 'Sisesta ühiku hind.',
+  percentRequired: 'Sisesta protsent.',
+  invalidCalcType: 'Vali arvutuse tüüp.',
+  invalidDate: 'Sisesta kuupäev kujul pp.kk.aaaa.',
+  invalidOrder: 'Ridade järjekord on vahepeal muutunud. Laadi leht uuesti.',
+} as const;
+
 /** Text in the app UI (Frontend area). */
 export const ui = {
   appName: 'Lihtne Excel',
