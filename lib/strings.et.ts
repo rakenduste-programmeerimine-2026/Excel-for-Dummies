@@ -89,7 +89,7 @@ export const ui = {
     empty: 'Sul pole veel ühtegi projekti.',
   },
   project: {
-    demoTitle: 'Näidisprojekt',
+    fallbackTitle: 'Projekt',
     downloadExcel: 'Laadi alla Excel',
   },
   table: {
@@ -115,6 +115,8 @@ export const ui = {
     rowLabel: (no: number) => `rida ${no}`,
     empty: 'Tabelis pole veel ridu. Alusta nupuga „Lisa rida“.',
     addRow: 'Lisa rida',
+    saving: 'Salvestan…',
+    saved: 'Salvestatud',
     moveUp: 'Liiguta üles',
     moveDown: 'Liiguta alla',
     moreActions: 'Rohkem valikuid',
