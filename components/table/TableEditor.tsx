@@ -78,7 +78,7 @@ export function TableEditor({ projectId, initialRows, taxRate }: Props) {
   }
 
   return (
-    <section>
+    <section className={styles.editor}>
       <p role="status" className={status.state === 'error' ? styles.saveError : styles.saveStatus}>
         {statusText(status)}
       </p>

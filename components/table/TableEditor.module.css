@@ -1,3 +1,8 @@
+/* The editor's own width decides table vs. cards (container query at the end of this file). */
+.editor {
+  container-type: inline-size;
+}
+
 /* Fixed height, so the table doesn't jump when the text appears. */
 .saveStatus,
 .saveError {
@@ -244,4 +249,114 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Only shown in the card layout. */
+.cardLabel {
+  display: none;
+}
+
+/* ---- Phone: one card per row ------------------------------------------------
+   Same markup as the table, restyled, so both layouts share all logic. */
+@container (width < 640px) {
+  .scroll {
+    overflow: visible;
+    background: none;
+    border: none;
+  }
+
+  .table,
+  .table tbody {
+    display: block;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    grid-auto-flow: row dense; /* lets the actions fill the gap left of the total */
+    gap: var(--space-3) var(--space-2);
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .row td,
+  .row:last-child td {
+    grid-column: 1 / -1;
+    padding: 0;
+    border: none;
+  }
+
+  .row .no {
+    grid-column: 1;
+    align-self: center;
+    width: auto;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .row .cellDescription {
+    grid-column: 2 / -1;
+  }
+
+  .row .cellQuantity {
+    grid-column: 1 / 3;
+  }
+
+  .row .cellUnit {
+    grid-column: 3;
+  }
+
+  .row .cellSpacer {
+    display: none;
+  }
+
+  .row .total {
+    grid-column: 3;
+    align-self: center;
+    padding: 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+
+  .row .cellActions {
+    grid-column: 1 / 3;
+  }
+
+  .cardLabel {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .description,
+  .unit,
+  .number {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .error {
+    max-width: none;
+  }
+
+  .percent .field {
+    flex: 1;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+
+  .totals {
+    max-width: none;
+  }
 }

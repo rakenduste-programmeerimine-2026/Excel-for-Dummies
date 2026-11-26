@@ -10,6 +10,14 @@ import { DECIMALS, type EditorRow } from './types';
 import styles from './TableEditor.module.css';
 
 const t = ui.table;
+
+/** Field name shown above an input in the phone card layout (where there are no column headers).
+ * Hidden from screen readers: each input already has a full name like "Kogus, rida 2". */
+const CardLabel = ({ children }: { children: string }) => (
+  <span className={styles.cardLabel} aria-hidden="true">
+    {children}
+  </span>
+);
 const calcTypes = Object.keys(t.calcTypes) as CalcType[];
 
 type Props = {
@@ -27,18 +35,21 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
   const update = (patch: Partial<Omit<EditorRow, 'id'>>) => dispatch({ type: 'update', id: row.id, patch });
 
   const unitPriceField = (
-    <NumberField
-      value={row.unit_price}
-      decimals={DECIMALS.unit_price}
-      label={label(t.columns.unitPrice)}
-      onChange={(unit_price) => update({ unit_price })}
-    />
+    <>
+      <CardLabel>{t.columns.unitPrice}</CardLabel>
+      <NumberField
+        value={row.unit_price}
+        decimals={DECIMALS.unit_price}
+        label={label(t.columns.unitPrice)}
+        onChange={(unit_price) => update({ unit_price })}
+      />
+    </>
   );
 
   return (
     <tr className={styles.row}>
       <td className={styles.no}>{no}</td>
-      <td>
+      <td className={styles.cellDescription}>
         <input
           className={`${styles.input} ${styles.description}`}
           value={row.description}
@@ -48,6 +59,7 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
         />
       </td>
       <td>
+        <CardLabel>{t.columns.calcType}</CardLabel>
         <select
           className={styles.input}
           value={row.calc_type}
@@ -65,7 +77,8 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
       {/* Only the inputs this calc type uses; the others are hidden, not disabled. */}
       {row.calc_type === 'qty_price' && (
         <>
-          <td>
+          <td className={styles.cellQuantity}>
+            <CardLabel>{t.columns.quantity}</CardLabel>
             <NumberField
               value={row.quantity}
               decimals={DECIMALS.quantity}
@@ -73,7 +86,8 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
               onChange={(quantity) => update({ quantity })}
             />
           </td>
-          <td>
+          <td className={styles.cellUnit}>
+            <CardLabel>{t.columns.unit}</CardLabel>
             <input
               className={`${styles.input} ${styles.unit}`}
               value={row.unit}
@@ -87,12 +101,13 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
       )}
       {row.calc_type === 'fixed' && (
         <>
-          <td colSpan={2} />
+          <td colSpan={2} className={styles.cellSpacer} />
           <td>{unitPriceField}</td>
         </>
       )}
       {row.calc_type === 'percent' && (
         <td colSpan={3}>
+          <CardLabel>{t.columns.percent}</CardLabel>
           <div className={styles.percent}>
             <NumberField
               value={row.percent}
@@ -106,7 +121,7 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
       )}
 
       <td className={`${styles.total} ${lineTotal < 0 ? styles.negative : ''}`}>{formatEur(lineTotal)}</td>
-      <td>
+      <td className={styles.cellActions}>
         <div className={styles.actions}>
           <button
             type="button"
