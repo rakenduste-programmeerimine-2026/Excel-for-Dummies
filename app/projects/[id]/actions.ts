@@ -1,5 +1,6 @@
 'use server';
 
+import * as columns from '@/lib/actions/columns';
 import * as rows from '@/lib/actions/rows';
 import type { ActionResult } from '@/lib/actions/result';
 import { createClient } from '@/lib/supabase/server';
@@ -27,4 +28,16 @@ export async function deleteRow(rowId: string): Promise<ActionResult<{ project_i
 
 export async function reorderRows(projectId: string, rowIds: string[]): Promise<ActionResult> {
   return rows.reorderRows(await createClient(), projectId, rowIds);
+}
+
+export async function addColumn(projectId: string, input: { name: string; id?: string }): Promise<ActionResult<columns.ColumnData>> {
+  return columns.addColumn(await createClient(), projectId, input);
+}
+
+export async function renameColumn(columnId: string, name: string): Promise<ActionResult> {
+  return columns.renameColumn(await createClient(), columnId, name);
+}
+
+export async function deleteColumn(columnId: string): Promise<ActionResult> {
+  return columns.deleteColumn(await createClient(), columnId);
 }

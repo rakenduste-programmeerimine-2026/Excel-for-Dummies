@@ -45,9 +45,9 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     let limit: number | undefined;
     let returning = false;
     let columns: string[] = [];
-    /** Like Postgres: every selected column is present, null when unset. */
+    /** Like PostgREST: exactly the selected columns, null when unset. */
     const withColumns = (rows: Row[]): Row[] =>
-      columns.length ? rows.map((r) => ({ ...Object.fromEntries(columns.map((c) => [c, null])), ...r })) : rows;
+      columns.length ? rows.map((r) => Object.fromEntries(columns.map((c) => [c, r[c] ?? null]))) : rows;
 
     const matching = (): Row[] => {
       let rows = (tables[table] ?? []).filter((r) => visible(table, r));
@@ -149,7 +149,9 @@ export function fakeSupabase(tables: Tables, options: FakeOptions = {}) {
     }
     if (name === 'delete_column') {
       const column = (tables.project_columns ?? []).find((c) => c.id === args.p_column_id && visible('project_columns', c));
-      if (column) {
+      // Same errcode as the real function (supabase/migrations/*_functions.sql).
+      if (!column) return Promise.resolve({ data: null, error: { message: 'delete_column: column not found', code: 'P0002' } });
+      {
         for (const r of tables.rows ?? []) {
           if (r.project_id === column.project_id && r.extra && typeof r.extra === 'object') delete (r.extra as Row)[column.id as string];
         }
