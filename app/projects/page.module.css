@@ -1,8 +1,169 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
 .title {
   font-size: 1.75rem;
-  margin-bottom: var(--space-4);
 }
 
 .empty {
   color: var(--color-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-right: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* The whole card body is the link: a big touch target on a phone. */
+.cardLink {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  text-decoration: none;
+}
+
+.cardName {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.cardDetails {
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.primary,
+.secondary,
+.danger,
+.deleteButton {
+  padding: 0 var(--space-4);
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.primary {
+  color: var(--color-primary-text);
+  background: var(--color-primary);
+  border: none;
+}
+
+.secondary,
+.deleteButton {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.deleteButton {
+  flex-shrink: 0;
+  color: var(--color-danger);
+}
+
+.danger {
+  color: #fff;
+  background: var(--color-danger);
+  border: none;
+}
+
+.primary:disabled,
+.danger:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.dialog {
+  width: min(28rem, calc(100% - 2 * var(--space-4)));
+  padding: var(--space-6);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius);
+}
+
+/* Keep scrolling inside the dialog from moving the page behind it. */
+.dialog:modal {
+  overscroll-behavior: contain;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.4);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.dialogTitle {
+  font-size: 1.375rem;
+  margin-bottom: var(--space-4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.input:user-invalid {
+  border-color: var(--color-danger);
+}
+
+.taxInput {
+  max-width: 8rem;
+}
+
+.error {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.error:empty {
+  display: none;
+}
+
+.dialogButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
