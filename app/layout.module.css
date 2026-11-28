@@ -18,6 +18,19 @@
   min-height: 56px;
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  font-weight: 600;
+}
+
 .logoutForm {
   display: flex;
   align-items: center;

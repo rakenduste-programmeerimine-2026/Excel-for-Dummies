@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
   // RLS returns only this user's projects.
   const [projects, profile] = await Promise.all([
     supabase.from('projects').select('id, name, client, address').order('created_at', { ascending: false }),
-    supabase.from('profiles').select('default_tax_rate').eq('id', userId).maybeSingle(),
+    supabase.from('profiles').select('business_name, default_tax_rate').eq('id', userId).maybeSingle(),
   ]);
   if (projects.error) throw new Error(`Loading projects failed: ${projects.error.message}`);
   if (profile.error) throw new Error(`Loading profile failed: ${profile.error.message}`);
@@ -34,6 +34,12 @@ export default async function ProjectsPage() {
         <h1 className={styles.title}>{t.title}</h1>
         <NewProjectDialog defaultTaxRate={defaultTaxRate} />
       </div>
+
+      {!profile.data?.business_name?.trim() && (
+        <p className={styles.notice}>
+          {ui.settings.missingName} <Link href="/settings">{ui.settings.title} →</Link>
+        </p>
+      )}
 
       {projects.data.length === 0 ? (
         <div className={styles.empty}>
