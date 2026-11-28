@@ -8,7 +8,8 @@ import styles from './page.module.css';
 
 const t = ui.projects;
 
-export function DeleteProjectButton({ id, name }: { id: string; name: string }) {
+/** On the projects list it refreshes in place; with `redirectTo` (the project's own page) it leaves the deleted page. */
+export function DeleteProjectButton({ id, name, redirectTo }: { id: string; name: string; redirectTo?: string }) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -26,7 +27,8 @@ export function DeleteProjectButton({ id, name }: { id: string; name: string }) 
         return;
       }
       dialog.current?.close();
-      router.refresh(); // the action revalidates /projects; refresh shows it without a reload
+      if (redirectTo) router.push(redirectTo);
+      else router.refresh(); // the action revalidates /projects; refresh shows it without a reload
     } catch {
       setError(validation.saveFailed);
       setPending(false);
@@ -36,7 +38,7 @@ export function DeleteProjectButton({ id, name }: { id: string; name: string }) 
   return (
     <>
       <button type="button" className={styles.deleteButton} aria-label={t.deleteLabel(name)} onClick={() => dialog.current?.showModal()}>
-        {t.delete}
+        {redirectTo ? t.deleteProject : t.delete}
       </button>
 
       <dialog ref={dialog} className={styles.dialog} aria-labelledby={titleId} onClose={() => setError('')}>

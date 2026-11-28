@@ -22,3 +22,19 @@
   background: var(--color-primary);
   border-radius: var(--radius);
 }
+
+.details {
+  color: var(--color-muted);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.dangerZone {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

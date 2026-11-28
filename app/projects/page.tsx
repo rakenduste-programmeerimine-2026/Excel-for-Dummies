@@ -5,7 +5,7 @@ import { currentUserId } from '@/lib/actions/projects';
 import { toNumber } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
 import { createClient } from '@/lib/supabase/server';
-import { NewProjectDialog } from './NewProjectDialog';
+import { ProjectDialog } from './ProjectDialog';
 import { ProjectList } from './ProjectList';
 import styles from './page.module.css';
 
@@ -32,7 +32,7 @@ export default async function ProjectsPage() {
     <>
       <div className={styles.header}>
         <h1 className={styles.title}>{t.title}</h1>
-        <NewProjectDialog defaultTaxRate={defaultTaxRate} />
+        <ProjectDialog defaultTaxRate={defaultTaxRate} />
       </div>
 
       {!profile.data?.business_name?.trim() && (

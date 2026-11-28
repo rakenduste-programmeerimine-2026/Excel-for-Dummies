@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { ui, validation } from '@/lib/strings.et';
 import { createProject, updateProject } from './actions';
 import { readNewProjectForm, taxRateText } from './newProject';
@@ -9,15 +9,23 @@ import styles from './page.module.css';
 
 const t = ui.projects;
 
-export function NewProjectDialog({ defaultTaxRate }: { defaultTaxRate: number }) {
+type EditableProject = { id: string; name: string; client: string | null; address: string | null; tax_rate: number };
+
+/** Without `project`: the "Uus projekt" dialog (tax rate from the default). With it: "Muuda projekti". */
+type Props = { defaultTaxRate: number; project?: never } | { project: EditableProject; defaultTaxRate?: never };
+
+export function ProjectDialog({ defaultTaxRate, project }: Props) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
+  const form = useRef<HTMLFormElement>(null);
+  const id = useId();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const taxRate = project ? project.tax_rate : defaultTaxRate;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const read = readNewProjectForm(new FormData(e.currentTarget), defaultTaxRate);
+    const read = readNewProjectForm(new FormData(e.currentTarget), taxRate);
     if (!read.ok) return setError(read.error);
     setPending(true);
     setError('');
@@ -27,6 +35,14 @@ export function NewProjectDialog({ defaultTaxRate }: { defaultTaxRate: number })
       setPending(false);
     };
     try {
+      if (project) {
+        const updated = await updateProject(project.id, { ...read.input, ...(read.taxRate !== null && { tax_rate: read.taxRate }) });
+        if (!updated.ok) return fail(updated.error);
+        setPending(false);
+        dialog.current?.close();
+        router.refresh(); // the action revalidates the page; refresh shows the new name, details and totals
+        return;
+      }
       const created = await createProject(read.input);
       if (!created.ok) return fail(created.error);
       if (read.taxRate !== null) {
@@ -42,21 +58,30 @@ export function NewProjectDialog({ defaultTaxRate }: { defaultTaxRate: number })
 
   return (
     <>
-      <button type="button" className={styles.primary} onClick={() => dialog.current?.showModal()}>
-        + {t.newProject}
+      <button type="button" className={project ? styles.secondary : styles.primary} onClick={() => dialog.current?.showModal()}>
+        {project ? t.edit : `+ ${t.newProject}`}
       </button>
 
-      <dialog ref={dialog} className={styles.dialog} aria-labelledby="new-project-title" onClose={() => setError('')}>
-        <h1 id="new-project-title" className={styles.dialogTitle}>
-          {t.newProject}
+      <dialog
+        ref={dialog}
+        className={styles.dialog}
+        aria-labelledby={`${id}-title`}
+        onClose={() => {
+          setError('');
+          form.current?.reset(); // cancelled edits don't come back next time
+        }}
+      >
+        <h1 id={`${id}-title`} className={styles.dialogTitle}>
+          {project ? t.editTitle : t.newProject}
         </h1>
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form ref={form} className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
-            <label htmlFor="project-name">{t.name}</label>
+            <label htmlFor={`${id}-name`}>{t.name}</label>
             <input
               className={styles.input}
-              id="project-name"
+              id={`${id}-name`}
               name="name"
+              defaultValue={project?.name}
               placeholder={t.namePlaceholder}
               maxLength={200}
               autoComplete="off"
@@ -68,24 +93,33 @@ export function NewProjectDialog({ defaultTaxRate }: { defaultTaxRate: number })
             />
           </div>
           <div className={styles.field}>
-            <label htmlFor="project-client">{t.client}</label>
-            <input className={styles.input} id="project-client" name="client" maxLength={200} autoComplete="off" />
+            <label htmlFor={`${id}-client`}>{t.client}</label>
+            <input className={styles.input} id={`${id}-client`} name="client" defaultValue={project?.client ?? ''} maxLength={200} autoComplete="off" />
           </div>
           <div className={styles.field}>
-            <label htmlFor="project-address">{t.address}</label>
-            <input className={styles.input} id="project-address" name="address" maxLength={300} autoComplete="street-address" />
+            <label htmlFor={`${id}-address`}>{t.address}</label>
+            <input
+              className={styles.input}
+              id={`${id}-address`}
+              name="address"
+              defaultValue={project?.address ?? ''}
+              maxLength={300}
+              autoComplete="street-address"
+            />
           </div>
           <div className={styles.field}>
-            <label htmlFor="project-tax">{t.taxRate}</label>
+            <label htmlFor={`${id}-tax`}>{t.taxRate}</label>
             <input
               className={`${styles.input} ${styles.taxInput}`}
-              id="project-tax"
+              id={`${id}-tax`}
               name="tax_rate"
               type="text"
               inputMode="decimal"
-              defaultValue={taxRateText(defaultTaxRate)}
+              defaultValue={taxRateText(taxRate)}
               autoComplete="off"
+              aria-describedby={project ? `${id}-tax-hint` : undefined}
             />
+            {project && <small id={`${id}-tax-hint`}>{t.taxRateProjectHint}</small>}
           </div>
 
           {/* Always rendered: a live region that only appears isn't announced reliably. */}
@@ -98,7 +132,7 @@ export function NewProjectDialog({ defaultTaxRate }: { defaultTaxRate: number })
               {t.cancel}
             </button>
             <button type="submit" className={styles.primary} disabled={pending}>
-              {pending ? t.pending : t.create}
+              {pending ? t.pending : project ? t.save : t.create}
             </button>
           </div>
         </form>
