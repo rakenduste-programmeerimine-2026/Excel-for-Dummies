@@ -41,6 +41,7 @@ export function TableEditor({ projectId, initialRows, taxRate }: Props) {
         dispatch({ type: 'fillEmpty', id: saved.id, values: { quantity, unit_price, percent } });
       }),
   );
+  const showQuantity = rows.some((row) => row.calc_type === 'qty_price');
   const totals = useMemo(() => calcProject(rows.map(toRowInput), taxRate), [rows, taxRate]);
 
   // Leaving the page: send waiting edits now, and let the browser warn while saves are still running.
@@ -92,8 +93,12 @@ export function TableEditor({ projectId, initialRows, taxRate }: Props) {
                 <th className={styles.no}>{t.columns.no}</th>
                 <th>{t.columns.description}</th>
                 <th>{t.columns.calcType}</th>
-                <th>{t.columns.quantity}</th>
-                <th>{t.columns.unit}</th>
+                {showQuantity && (
+                  <>
+                    <th>{t.columns.quantity}</th>
+                    <th>{t.columns.unit}</th>
+                  </>
+                )}
                 <th>{t.columns.unitPrice}</th>
                 <th className={styles.total}>{t.columns.total}</th>
                 <th>
@@ -112,6 +117,7 @@ export function TableEditor({ projectId, initialRows, taxRate }: Props) {
                   isLast={index === rows.length - 1}
                   dispatch={apply}
                   onDuplicate={() => apply({ type: 'duplicate', id: row.id, newId: newId() })}
+                  showQuantity={showQuantity}
                 />
               ))}
             </tbody>

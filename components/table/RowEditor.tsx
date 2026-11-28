@@ -29,9 +29,11 @@ type Props = {
   isLast: boolean;
   dispatch: Dispatch<RowsAction>;
   onDuplicate: () => void;
+  /** False when no row is "Kogus × hind": the Kogus and Ühik columns are hidden. */
+  showQuantity: boolean;
 };
 
-export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDuplicate }: Props) {
+export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDuplicate, showQuantity }: Props) {
   const label = (field: string) => `${field}, ${t.rowLabel(no)}`;
   const update = (patch: Partial<Omit<EditorRow, 'id'>>) => dispatch({ type: 'update', id: row.id, patch });
 
@@ -96,12 +98,12 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
       )}
       {row.calc_type === 'fixed' && (
         <>
-          <td colSpan={2} className={styles.cellSpacer} />
+          {showQuantity && <td colSpan={2} className={styles.cellSpacer} />}
           <td>{unitPriceField}</td>
         </>
       )}
       {row.calc_type === 'percent' && (
-        <td colSpan={3}>
+        <td colSpan={showQuantity ? 3 : 1}>
           <CardLabel>{t.columns.percent}</CardLabel>
           <div className={styles.percent}>
             <NumberField
