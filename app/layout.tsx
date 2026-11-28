@@ -26,7 +26,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Link href="/projects" className={styles.logo}>
               {ui.appName}
             </Link>
-            {user && <LogoutButton />}
+            {user && (
+              <nav className={styles.nav}>
+                <Link href="/settings" className={styles.navLink}>
+                  {ui.settings.title}
+                </Link>
+                <LogoutButton />
+              </nav>
+            )}
           </div>
         </header>
         <main className={styles.main}>{children}</main>
