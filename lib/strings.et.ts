@@ -75,6 +75,7 @@ export const ui = {
   auth: {
     login: 'Logi sisse',
     signup: 'Loo konto',
+    logout: 'Logi välja',
     email: 'E-post',
     password: 'Parool',
     passwordHint: (min: number) => `Vähemalt ${min} märki.`,
