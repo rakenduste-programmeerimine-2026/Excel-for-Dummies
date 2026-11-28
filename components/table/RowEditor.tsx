@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, type Dispatch } from 'react';
+import { useId, useRef, useState, type Dispatch } from 'react';
+import { flushSync } from 'react-dom';
 import type { CalcType } from '@/lib/calc';
 import { formatEur, parseDecimal } from '@/lib/format';
 import { ui } from '@/lib/strings.et';
@@ -88,13 +89,7 @@ export function RowEditor({ row, no, lineTotal, isFirst, isLast, dispatch, onDup
           </td>
           <td className={styles.cellUnit}>
             <CardLabel>{t.columns.unit}</CardLabel>
-            <input
-              className={`${styles.input} ${styles.unit}`}
-              value={row.unit}
-              placeholder={t.unitPlaceholder}
-              onChange={(e) => update({ unit: e.target.value })}
-              aria-label={label(t.columns.unit)}
-            />
+            <UnitField value={row.unit} label={label(t.columns.unit)} onChange={(unit) => update({ unit })} />
           </td>
           <td>{unitPriceField}</td>
         </>
@@ -179,6 +174,56 @@ function NumberField({ value, decimals, label, onChange }: NumberFieldProps) {
         <p id={errorId} className={styles.error}>
           {t.invalidNumber(decimals)}
         </p>
+      )}
+    </div>
+  );
+}
+
+type UnitFieldProps = {
+  value: string;
+  label: string;
+  onChange: (value: string) => void;
+};
+
+const OTHER = '__other__';
+
+/** Unit dropdown with a "Muu…" option that reveals a text input for units not on the list. */
+function UnitField({ value, label, onChange }: UnitFieldProps) {
+  const customInput = useRef<HTMLInputElement>(null);
+  // A saved unit that isn't on the list opens in "Muu…" mode, so nothing is lost.
+  const [custom, setCustom] = useState(value !== '' && !t.units.includes(value));
+
+  function pick(selected: string) {
+    if (selected !== OTHER) {
+      setCustom(false);
+      onChange(selected);
+      return;
+    }
+    flushSync(() => setCustom(true)); // render the text input before focusing it
+    onChange('');
+    customInput.current?.focus();
+  }
+
+  return (
+    <div className={styles.field}>
+      <select className={`${styles.input} ${styles.unit}`} value={custom ? OTHER : value} onChange={(e) => pick(e.target.value)} aria-label={label}>
+        <option value="">{t.unitNone}</option>
+        {t.units.map((unit) => (
+          <option key={unit} value={unit}>
+            {unit}
+          </option>
+        ))}
+        <option value={OTHER}>{t.unitOther}</option>
+      </select>
+      {custom && (
+        <input
+          ref={customInput}
+          className={`${styles.input} ${styles.unit}`}
+          value={value}
+          maxLength={30}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={`${label}, ${t.unitCustom}`}
+        />
       )}
     </div>
   );

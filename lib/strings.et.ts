@@ -142,7 +142,11 @@ export const ui = {
     },
     percentSuffix: '% ülalolevatest',
     descriptionPlaceholder: 'nt Seinte värvimine',
-    unitPlaceholder: 'm², h, tk',
+    // Unit dropdown, most common first. "Muu…" lets the user type any other unit.
+    units: ['m²', 'jm', 'm', 'm³', 'tk', 'kmpl', 'h', 'päev', 'kg', 'l'] as readonly string[],
+    unitNone: '—',
+    unitOther: 'Muu…',
+    unitCustom: 'muu ühik',
     rowLabel: (no: number) => `rida ${no}`,
     empty: 'Tabelis pole veel ridu. Alusta nupuga „Lisa rida“.',
     addRow: 'Lisa rida',
