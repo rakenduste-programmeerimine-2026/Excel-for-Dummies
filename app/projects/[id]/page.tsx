@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { cache } from 'react';
+import { DeleteProjectButton } from '@/app/projects/DeleteProjectButton';
+import { ProjectDialog } from '@/app/projects/ProjectDialog';
 import { TableEditor } from '@/components/table/TableEditor';
 import { toEditorRow } from '@/components/table/rowsReducer';
 import { currentUserId } from '@/lib/actions/projects';
@@ -20,7 +22,7 @@ type Params = { params: Promise<{ id: string }> };
 const loadProject = cache(async (id: string) => {
   if (!idSchema.safeParse(id).success) return null;
   const supabase = await createClient();
-  const { data: project, error } = await supabase.from('projects').select('name, tax_rate').eq('id', id).maybeSingle();
+  const { data: project, error } = await supabase.from('projects').select('name, client, address, tax_rate').eq('id', id).maybeSingle();
   if (error) throw new Error(`Loading project failed: ${error.message}`);
   if (!project) return null;
 
@@ -34,6 +36,8 @@ const loadProject = cache(async (id: string) => {
 
   return {
     name: project.name,
+    client: project.client,
+    address: project.address,
     taxRate: toNumber(project.tax_rate) ?? 0,
     rows: rows.map((row) => toEditorRow(toRowData(row))),
   };
@@ -49,18 +53,29 @@ export default async function ProjectPage({ params }: Params) {
   if (!(await currentUserId(await createClient()))) redirect('/login');
   const project = await loadProject(id);
   if (!project) notFound();
+  const details = [project.client, project.address].filter(Boolean).join(' · ');
 
   return (
     <>
       <BackLink />
       <div className={styles.header}>
-        <h1 className={styles.title}>{project.name}</h1>
-        {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}
-        <a href={`/api/projects/${encodeURIComponent(id)}/export`} className={styles.download} download>
-          {ui.project.downloadExcel}
-        </a>
+        <div>
+          <h1 className={styles.title}>{project.name}</h1>
+          {details && <p className={styles.details}>{details}</p>}
+        </div>
+        <div className={styles.buttons}>
+          <ProjectDialog project={{ id, name: project.name, client: project.client, address: project.address, tax_rate: project.taxRate }} />
+          {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}
+          <a href={`/api/projects/${encodeURIComponent(id)}/export`} className={styles.download} download>
+            {ui.project.downloadExcel}
+          </a>
+        </div>
       </div>
       <TableEditor projectId={id} initialRows={project.rows} taxRate={project.taxRate} />
+      {/* Kept away from the everyday buttons at the top. */}
+      <div className={styles.dangerZone}>
+        <DeleteProjectButton id={id} name={project.name} redirectTo="/projects" />
+      </div>
     </>
   );
 }
