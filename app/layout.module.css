@@ -24,13 +24,6 @@
   gap: var(--space-3);
 }
 
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--touch-target);
-  font-weight: 600;
-}
-
 .logoutForm {
   display: flex;
   align-items: center;
@@ -42,6 +35,14 @@
   font-size: 0.875rem;
 }
 
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  text-decoration: none;
+}
+
+.navLink,
 .logout {
   padding: 0 var(--space-4);
   font-weight: 600;
