@@ -71,6 +71,7 @@ export const auth = {
 /** Text in the app UI (Frontend area). */
 export const ui = {
   appName: 'Lihtne Excel',
+  backToProjects: '← Projektid',
   appDescription: 'Koosta projekti eelarve ja laadi see alla Exceli failina.',
   auth: {
     login: 'Logi sisse',
@@ -125,7 +126,6 @@ export const ui = {
   },
   settings: {
     title: 'Seaded',
-    back: '← Projektid',
     businessName: 'Firma nimi',
     businessNamePlaceholder: 'nt Ehitus OÜ',
     businessNameHint: 'Kuvatakse Exceli faili pealkirjana.',

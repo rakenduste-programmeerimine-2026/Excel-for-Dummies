@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { cache } from 'react';
+import { BackLink } from '@/components/BackLink';
 import { TableEditor } from '@/components/table/TableEditor';
 import { toEditorRow } from '@/components/table/rowsReducer';
 import { currentUserId } from '@/lib/actions/projects';
@@ -50,6 +51,7 @@ export default async function ProjectPage({ params }: Params) {
 
   return (
     <>
+      <BackLink />
       <div className={styles.header}>
         <h1 className={styles.title}>{project.name}</h1>
         {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}

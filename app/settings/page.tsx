@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { BackLink } from '@/components/BackLink';
 import { getProfile } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
 import { createClient } from '@/lib/supabase/server';
@@ -15,7 +15,7 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <Link href="/projects">{ui.settings.back}</Link>
+      <BackLink />
       <div className={styles.header}>
         <h1 className={styles.title}>{ui.settings.title}</h1>
       </div>
