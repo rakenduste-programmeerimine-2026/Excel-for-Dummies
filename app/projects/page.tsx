@@ -5,8 +5,8 @@ import { currentUserId } from '@/lib/actions/projects';
 import { toNumber } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
 import { createClient } from '@/lib/supabase/server';
-import { DeleteProjectButton } from './DeleteProjectButton';
 import { NewProjectDialog } from './NewProjectDialog';
+import { ProjectList } from './ProjectList';
 import styles from './page.module.css';
 
 export const metadata: Metadata = { title: `${ui.projects.title} · ${ui.appName}` };
@@ -47,20 +47,7 @@ export default async function ProjectsPage() {
           <p>{t.emptyHint}</p>
         </div>
       ) : (
-        <ul className={styles.list}>
-          {projects.data.map((project) => {
-            const details = [project.client, project.address].filter(Boolean).join(' · ');
-            return (
-              <li key={project.id} className={styles.card}>
-                <Link href={`/projects/${project.id}`} className={styles.cardLink}>
-                  <span className={styles.cardName}>{project.name}</span>
-                  {details && <span className={styles.cardDetails}>{details}</span>}
-                </Link>
-                <DeleteProjectButton id={project.id} name={project.name} />
-              </li>
-            );
-          })}
-        </ul>
+        <ProjectList projects={projects.data} />
       )}
     </>
   );

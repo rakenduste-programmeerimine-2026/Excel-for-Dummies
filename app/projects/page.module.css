@@ -176,3 +176,16 @@
   border-left: 4px solid var(--color-primary);
   border-radius: var(--radius);
 }
+
+.search {
+  margin-bottom: var(--space-4);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
