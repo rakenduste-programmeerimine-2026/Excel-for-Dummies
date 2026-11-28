@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { cache } from 'react';
-import { BackLink } from '@/components/BackLink';
 import { TableEditor } from '@/components/table/TableEditor';
 import { toEditorRow } from '@/components/table/rowsReducer';
 import { currentUserId } from '@/lib/actions/projects';
@@ -10,6 +9,8 @@ import { toNumber } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
 import { createClient } from '@/lib/supabase/server';
 import { idSchema } from '@/lib/validation';
+// shortcut: out of alphabetical order to avoid a merge conflict with fe/57; sort after both merge
+import { BackLink } from '@/components/BackLink';
 import styles from './page.module.css';
 
 type Params = { params: Promise<{ id: string }> };
