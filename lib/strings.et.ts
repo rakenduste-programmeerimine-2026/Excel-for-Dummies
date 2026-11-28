@@ -123,6 +123,15 @@ export const ui = {
     deleteTitle: 'Kustuta projekt?',
     deleteText: (name: string) => `Projekt „${name}“ ja kõik selle read kustutatakse. Seda ei saa tagasi võtta.`,
   },
+  status: {
+    notFoundTitle: 'Lehte ei leitud',
+    notFoundText: 'Seda lehte pole olemas või see on kustutatud.',
+    errorTitle: 'Midagi läks valesti',
+    errorText: 'Proovi uuesti. Kui viga kordub, laadi leht uuesti.',
+    retry: 'Proovi uuesti',
+    backToProjects: '← Tagasi projektide juurde',
+    loading: 'Laadin…',
+  },
   settings: {
     title: 'Seaded',
     back: '← Projektid',
