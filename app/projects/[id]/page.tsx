@@ -9,6 +9,8 @@ import { toNumber } from '@/lib/queries';
 import { ui } from '@/lib/strings.et';
 import { createClient } from '@/lib/supabase/server';
 import { idSchema } from '@/lib/validation';
+// shortcut: out of alphabetical order to avoid a merge conflict with fe/57; sort after both merge
+import { BackLink } from '@/components/BackLink';
 import styles from './page.module.css';
 
 type Params = { params: Promise<{ id: string }> };
@@ -50,6 +52,7 @@ export default async function ProjectPage({ params }: Params) {
 
   return (
     <>
+      <BackLink />
       <div className={styles.header}>
         <h1 className={styles.title}>{project.name}</h1>
         {/* Plain <a>, not <Link>: it's a file download, not a page. Endpoint is the export contract (#7). */}
