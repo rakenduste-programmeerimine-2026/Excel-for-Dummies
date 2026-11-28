@@ -71,7 +71,7 @@ export const auth = {
 /** Text in the app UI (Frontend area). */
 export const ui = {
   appName: 'Lihtne Excel',
-  backToProjects: '← Projektid',
+  backToProjects: 'Tagasi',
   appDescription: 'Koosta projekti eelarve ja laadi see alla Exceli failina.',
   auth: {
     login: 'Logi sisse',
